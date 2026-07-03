@@ -1,18 +1,22 @@
 {
     "swagger": "2.0",
     "info": {
-        "version": "v2.0",
+        "version": "v3.0",
         "title": "Monitor API",
-        "description": "An API for an integrator to access the features of DocuSign Monitor",
+        "description": "An API for an integrator to access the features of Docusign Monitor",
         "termsOfService": "https://www.docusign.com/company/terms-and-conditions/web",
         "contact": {
-            "name": "DocuSign Developer Center",
+            "name": "Docusign Developer Center",
             "url": "https://developers.docusign.com",
             "email": "devcenter@docusign.com"
+        },
+        "license": {
+            "name": "Terms and Conditions",
+            "url": "https://www.docusign.com/company/terms-and-conditions/web"
         }
     },
-    "host": "lens-d.docusign.net",
-    "basePath": "",
+    "host": "api.docusign.com",
+    "basePath": "/",
     "schemes": [
         "https"
     ],
@@ -23,125 +27,411 @@
         "application/json"
     ],
     "externalDocs": {
-        "description": "",
-        "url": ""
-    },
-    "license": {
-        "name": "Terms and Conditions",
-        "url": "https://www.docusign.com/company/terms-and-conditions/web"
+        "description": "See the Docusign Monitor API Guide for more information.",
+        "url": "https://developers.docusign.com/docs/monitor-api/reference/"
     },
     "paths": {
-        "/api/v{version}/datasets/{dataSetName}/stream": {
+        "/v1/organizations/{organizationId}/stream": {
             "get": {
                 "tags": [
                     "DataSet"
                 ],
-                "summary": "Gets customer event data for an organization.",
-                "description": "Gets customer event data for the organization that owns the integration key.\n\nThe results for this endpoint are paginated by event timestamp. Use the `cursor` parameter to specify where the query begins in the dataset. Use the `limit` parameter to set the number of records returned.\n",
-                "operationId": "Api_Version_DatasetsByDataSetNameStreamGet",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
+                "summary": "",
+                "description": "",
+                "operationId": "Api_v1_RealTimeAlerting_GetStream",
                 "parameters": [
                     {
-                        "name": "dataSetName",
+                        "name": "organizationId",
                         "in": "path",
-                        "description": "Must be `monitor`.",
-                        "required": true,
-                        "type": "string"
-                    },
-                    {
-                        "name": "version",
-                        "in": "path",
-                        "description": "Must be `2`.\n",
                         "required": true,
                         "type": "string",
-                        "default": "2.0"
+                        "format": "uuid",
+                        "description": ""
                     },
                     {
                         "name": "cursor",
                         "in": "query",
-                        "description": "Specifies a pointer into the dataset where your query will begin. You can either provide an ISO DateTime or a string cursor (from the `endCursor` value in the response). If no value is provided, the query begins from seven days ago.\n\nFor example, to fetch event data beginning from January 1, 2022, set this value to `2022-01-01T00:00:00Z`. The response will include data about events starting from that date in chronological order. The response also includes an `endCursor` property. To fetch the next page of event data, call this endpoint again with `cursor` set to the previous `endCursor` value.\n",
                         "required": false,
-                        "type": "string"
+                        "type": "string",
+                        "description": "A location in the DataSet  that continues querying data."
                     },
                     {
                         "name": "limit",
                         "in": "query",
-                        "description": "The maximum number of records to return. The default value is 1000.",
                         "required": false,
                         "type": "integer",
                         "format": "int32",
-                        "default": 1000
+                        "description": "Maximum number of results to return."
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Success",
+                        "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/CursoredResult"
+                            "$ref": "#/definitions/StreamResponse"
                         }
                     }
                 },
                 "security": [
                     {
-                        "accessCode": [
-                            "impersonation"
-                        ]
+                        "Bearer": []
                     }
                 ],
                 "x-ds-methodname": "getStream",
                 "x-ds-method": "getStream",
-                "x-ds-service": "DataSet",
+                "x-ds-service": "DocuMonitor",
                 "x-ds-in-sdk": true
             }
         }
     },
     "definitions": {
-        "CursoredResult": {
+        "Browser": {
             "type": "object",
             "properties": {
-                "endCursor": {
+                "family": {
                     "type": "string",
+                    "x-nullable": true,
                     "description": ""
                 },
-                "data": {
-                    "uniqueItems": false,
-                    "type": "array",
-                    "items": {
-                        "type": "object"
-                    },
+                "version": {
+                    "$ref": "#/definitions/Version",
+                    "description": "The requested API version"
+                }
+            },
+            "additionalProperties": false,
+            "x-ds-definition-name": "Browser",
+            "description": "",
+            "x-ms-summary": ""
+        },
+        "Device": {
+            "type": "object",
+            "properties": {
+                "family": {
+                    "type": "string",
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "brand": {
+                    "type": "string",
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "model": {
+                    "type": "string",
+                    "x-nullable": true,
                     "description": ""
                 }
             },
-            "x-ds-definition-name": "CursoredResult",
+            "additionalProperties": false,
+            "x-ds-definition-name": "Device",
+            "description": "",
+            "x-ms-summary": ""
+        },
+        "IpAddressLocation": {
+            "type": "object",
+            "properties": {
+                "latitude": {
+                    "type": "number",
+                    "format": "double",
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "longitude": {
+                    "type": "number",
+                    "format": "double",
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "country": {
+                    "type": "string",
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "state": {
+                    "type": "string",
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "city": {
+                    "type": "string",
+                    "x-nullable": true,
+                    "description": ""
+                }
+            },
+            "additionalProperties": false,
+            "x-ds-definition-name": "IpAddressLocation",
+            "description": "",
+            "x-ms-summary": ""
+        },
+        "Os": {
+            "type": "object",
+            "properties": {
+                "family": {
+                    "type": "string",
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "version": {
+                    "$ref": "#/definitions/Version",
+                    "description": "The requested API version"
+                }
+            },
+            "additionalProperties": false,
+            "x-ds-definition-name": "Os",
+            "description": "",
+            "x-ms-summary": ""
+        },
+        "StreamingEventRow": {
+            "type": "object",
+            "properties": {
+                "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": ""
+                },
+                "eventId": {
+                    "type": "string",
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "site": {
+                    "type": "string",
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "accountId": {
+                    "type": "string",
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "organizationId": {
+                    "type": "string",
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "userId": {
+                    "type": "string",
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "integratorKey": {
+                    "type": "string",
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "userAgent": {
+                    "type": "string",
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "userAgentClientInfo": {
+                    "$ref": "#/definitions/UserAgentClientInfo",
+                    "description": ""
+                },
+                "ipAddress": {
+                    "type": "string",
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "ipAddressLocation": {
+                    "$ref": "#/definitions/IpAddressLocation",
+                    "description": ""
+                },
+                "object": {
+                    "type": "string",
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "action": {
+                    "type": "string",
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "property": {
+                    "type": "string",
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "field": {
+                    "type": "string",
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "result": {
+                    "type": "string",
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "source": {
+                    "type": "string",
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "isUserMemberOfDomain": {
+                    "type": "boolean",
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "referencedUserIsMemberOfDomain": {
+                    "type": "boolean",
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "referencedUserId": {
+                    "type": "string",
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "proxyStatus": {
+                    "type": "string",
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "proxyType": {
+                    "type": "string",
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "proxyLevel": {
+                    "type": "string",
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "latitude": {
+                    "type": "number",
+                    "format": "double",
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "longitude": {
+                    "type": "number",
+                    "format": "double",
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "city": {
+                    "type": "string",
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "state": {
+                    "type": "string",
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "country": {
+                    "type": "string",
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "device": {
+                    "type": "string",
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "browser": {
+                    "type": "string",
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "os": {
+                    "type": "string",
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "affectedUserId": {
+                    "type": "string",
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "affectedUserIsMemberOfDomain": {
+                    "type": "boolean",
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "data": {
+                    "type": "object",
+                    "additionalProperties": {},
+                    "x-nullable": true,
+                    "description": ""
+                }
+            },
+            "additionalProperties": false,
+            "x-ds-definition-name": "StreamingEventRow",
+            "description": "",
+            "x-ms-summary": ""
+        },
+        "UserAgentClientInfo": {
+            "type": "object",
+            "properties": {
+                "browser": {
+                    "$ref": "#/definitions/Browser",
+                    "description": ""
+                },
+                "device": {
+                    "$ref": "#/definitions/Device",
+                    "description": ""
+                },
+                "os": {
+                    "$ref": "#/definitions/Os",
+                    "description": ""
+                }
+            },
+            "additionalProperties": false,
+            "x-ds-definition-name": "UserAgentClientInfo",
+            "description": "",
+            "x-ms-summary": ""
+        },
+        "Version": {
+            "type": "object",
+            "properties": {
+                "major": {
+                    "type": "string",
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "minor": {
+                    "type": "string",
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "patch": {
+                    "type": "string",
+                    "x-nullable": true,
+                    "description": ""
+                }
+            },
+            "additionalProperties": false,
+            "x-ds-definition-name": "Version",
+            "description": "",
+            "x-ms-summary": ""
+        },
+        "StreamResponse": {
+            "type": "object",
+            "properties": {
+                "resultData": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/StreamingEventRow"
+                    },
+                    "x-nullable": true,
+                    "description": ""
+                },
+                "endCursor": {
+                    "type": "string",
+                    "x-nullable": true,
+                    "description": ""
+                }
+            },
+            "additionalProperties": false,
+            "x-ds-definition-name": "StreamResponse",
             "description": "",
             "x-ms-summary": ""
         },
         "DataSet": {
-            "type": "object",
-            "properties": {
-                "endCursor": {
-                    "type": "string",
-                    "description": ""
-                },
-                "data": {
-                    "uniqueItems": false,
-                    "type": "array",
-                    "items": {
-                        "type": "object"
-                    },
-                    "description": ""
-                }
-            },
-            "x-ds-definition-name": "CursoredResult",
-            "description": "Methods to fetch organization event data.",
-            "x-ms-summary": "Methods to fetch organization event data.",
             "x-ds-category": "Monitor",
-            "x-ds-order": "100"
+            "x-ms-summary": "Methods to fetch organization event data.",
+            "description": "Methods to fetch organization event data."
         }
     },
     "securityDefinitions": {
@@ -157,13 +447,6 @@
             "Bearer": []
         }
     ],
-    "x-ds-categories": [
-        {
-            "name": "Monitor",
-            "summary": "The DocuSign Monitor API receives a data feed containing security events for your DocuSign account. This data goes directly to whichever application or website you choose to integrate with DocuSign's eSignature REST API.",
-            "description": "Each time an event occurs, DocuSign Monitor returns JSON Data Types from a download endpoint. The endpoints include the Monitor UI, SIEMs such as Splunk, and other Customer API endpoints.\n\n**Note:** Your accounts must exist inside an organization to access this data.\n"
-        }
-    ],
     "x-ds-devdocs": {
         "stamp": "ca00a16 2022-10-04 12:15:28-0400"
     },
@@ -171,6 +454,13 @@
         {
             "name": "DataSet",
             "description": "The DataSet resource provides methods that allow you to fetch organization event data. The `dataSet` path parameter must be set to `monitor`."
+        }
+    ],
+    "x-ds-categories": [
+        {
+            "name": "Monitor",
+            "summary": "The Docusign Monitor API receives a data feed containing security events for your Docusign account. This data goes directly to whichever application or website you choose to integrate with Docusign's eSignature REST API.",
+            "description": "Each time an event occurs, Docusign Monitor returns JSON Data Types from a download endpoint. The endpoints include the Monitor UI, SIEMs such as Splunk, and other Customer API endpoints.\n\n**Note:** Your accounts must exist inside an organization to access this data.\n"
         }
     ]
 }
